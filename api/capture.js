@@ -15,6 +15,10 @@ export default async function handler(req, res) {
   const NOTION_TOKEN = process.env.NOTION_TOKEN;
   const NOTION_DB_ID = process.env.NOTION_DB_ID || '4c78ff14-6c61-4aac-860b-7c5b981ee91a';
 
+  console.log('Token present:', !!NOTION_TOKEN);
+  console.log('Token prefix:', NOTION_TOKEN ? NOTION_TOKEN.substring(0, 12) : 'none');
+  console.log('DB ID:', NOTION_DB_ID);
+
   if (!NOTION_TOKEN) {
     return res.status(500).json({ error: 'Notion token not configured' });
   }
@@ -42,9 +46,16 @@ export default async function handler(req, res) {
     })
   });
 
+  const responseBody = await notionRes.json();
+  console.log('Notion status:', notionRes.status);
+  console.log('Notion response:', JSON.stringify(responseBody));
+
   if (!notionRes.ok) {
-    const err = await notionRes.json();
-    return res.status(500).json({ error: err.message || 'Notion API error' });
+    return res.status(500).json({ 
+      error: responseBody.message || 'Notion API error',
+      code: responseBody.code,
+      full: responseBody
+    });
   }
 
   return res.status(200).json({ success: true });
