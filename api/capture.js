@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   const NOTION_DB_ID = process.env.NOTION_DB_ID || '4c78ff14-6c61-4aac-860b-7c5b981ee91a';
 
   console.log('Token present:', !!NOTION_TOKEN);
-  console.log('Token prefix:', NOTION_TOKEN ? NOTION_TOKEN.substring(0, 12) : 'none');
+  console.log('Token prefix:', NOTION_TOKEN ? NOTION_TOKEN.substring(0, 10) : 'none');
   console.log('DB ID:', NOTION_DB_ID);
 
   if (!NOTION_TOKEN) {
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
       'Notion-Version': '2022-06-28'
     },
     body: JSON.stringify({
-      parent: { database_id: NOTION_DB_ID },
+      parent: { database_id: NOTION_DB_ID.replace(/-/g, '') },
       properties
     })
   });
